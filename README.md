@@ -1,6 +1,8 @@
 
 # Magisk Module: iOS Emojis for Android
 
+[Download](https://drive.google.com/file/d/1513w3RVWYMpBrFzoxCLBDs9EyHTQQvtb/view?usp=sharing)
+
 ## Description
 
 This Magisk module allows you to replace the default emojis on your Android device with the popular and widely loved iOS emojis. Whether you're an iPhone enthusiast missing the familiar emojis or just prefer the aesthetic of iOS emojis, this module provides an easy solution to customize your Android experience.
