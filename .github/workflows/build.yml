@@ -4,10 +4,7 @@ on:
     branches:
       - main
     paths:
-      - "lib/**"
-      - "assets/**"
-      - "pubspec.yaml"
-      - ".github/workflows/main.yml"
+      - "*"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,12 +22,13 @@ jobs:
           VERSION=$(git rev-list --count HEAD)
           echo "Generating version $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          
       - name: Create ZIP
         id: zip
         run: |
           zip -r release.zip *
 
-      - name: Upload APK
+      - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
           name: release.zip
