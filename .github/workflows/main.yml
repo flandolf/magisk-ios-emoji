@@ -1,39 +1,47 @@
-name: Zip and Release
-
+name: Release ZIP
 on:
   push:
     branches:
-      - main # Change this to your main branch name
-
+      - main
+    paths:
+      - "lib/**"
+      - "assets/**"
+      - "pubspec.yaml"
+      - ".github/workflows/main.yml"
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Zip Repository
-        run: zip -r repo.zip .
+      - name: Generate Version from commit number
+        id: version
+        run: |
+          VERSION=$(git rev-list --count HEAD)
+          echo "Generating version $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+      - name: Create ZIP
+        id: zip
+        run: |
+          zip -r release.zip *
 
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release.zip
+          path: release.zip
+          
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./repo.zip
-          asset_name: repo.zip
-          asset_content_type: application/zip
+          artifacts: release.zip
+          token: ${{ github.token }}
+          tag: v${{ steps.version.outputs.VERSION }}
+          makeLatest: true
+          replacesArtifacts: true
+          generateReleaseNotes: true
